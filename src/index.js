@@ -1,5 +1,3 @@
-// transform 从 AST 提取需要的信息
-// banner 生成并加上 UserScript Header
 import path from "path";
 import { readFile } from "fs/promises";
 import { promisify } from "util";
@@ -10,7 +8,7 @@ import getPkgRepo from "get-pkg-repo";
 import { walk } from "estree-walker";
 import is_reference from "is-reference";
 import { attachScopes } from "@rollup/pluginutils";
-import GMAPIs from "./interface";
+import GMAPIs from "./GMAPIs";
 
 const exec = promisify(originalExec);
 
@@ -44,14 +42,15 @@ module.exports = function (metaPath = path.resolve(cwd, "meta.json")) {
           if (node.scope) scope = node.scope;
           if (
             node.type === "Identifier" &&
-            is_reference(node, parent)
+            is_reference(node, parent) &&
+            !scope.contains(node.name)
           ) {
             const nodeName = node.name;
             if (GMAPIs.includes(nodeName)) {
               grantSet.add(nodeName);
 
               if (nodeName === "GM_xmlhttpRequest" && parent.callee === node) {
-                const urlNode = parent?.arguments?.properties?.find(
+                const urlNode = parent?.arguments?.[0]?.properties?.find(
                   ({ key }) => key.type === "Identifier" && key.name === "url"
                 );
                 if (urlNode && urlNode.value.type === "Literal") {
@@ -121,12 +120,11 @@ module.exports = function (metaPath = path.resolve(cwd, "meta.json")) {
           const moduleHeader = headerMap.get(id);
           if (moduleHeader) {
             const { grantSet, connectSet } = moduleHeader;
-            grantSet && grants.add(...grantSet);
-            connectSet && connects.add(...connectSet);
+            grantSet.size && grants.add(...grantSet);
+            connectSet.size && connects.add(...connectSet);
           }
         }
 
-        console.log(grants, connects);
         for (const v of grants) {
           itemEntries.push(["@grant", v]);
         }

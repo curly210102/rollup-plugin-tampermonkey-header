@@ -10,22 +10,18 @@
 // @updateURL      https://raw.githubusercontent.com/conventional-changelog/get-pkg-repo/main/user.js
 // @downloadURL    https://raw.githubusercontent.com/conventional-changelog/get-pkg-repo/main/user.js
 // @include        *
-// grant           GM_getValue
-// connect         undefined
+// @grant          GM_getValue
+// @connect        api.juejin.com
 // ==/UserScript==
 (function () {
-	'use strict';
+    'use strict';
 
-	GM_getValue();
+    GM_getValue();
 
-	a.GM_getValue();
 
-	const a = GM_getValue;
-
-	a();
-
-	const GM_getValue = "";
-
-	GM_getValue();
+    GM_xmlhttpRequest({
+        method: "post",
+        url: "https://api.juejin.com/abc/api/q?1"
+    });
 
 })();
