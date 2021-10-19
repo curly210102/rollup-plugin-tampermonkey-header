@@ -98,6 +98,7 @@ module.exports = function (metaPath = path.resolve(cwd, "meta.json")) {
           "@author": getPkgAuthor(pkg),
           "@description": pkg.description,
           "@icon": pkg.icon,
+          "@include": "*",
           ...repoRelatedMeta,
         };
 
