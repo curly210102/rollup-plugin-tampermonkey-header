@@ -1,0 +1,18 @@
+{
+  "name": "plugin-playground",
+  "author": {
+    "name": "Nickname"
+  },
+  "description": "A Test",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^2.58.0"
+  },
+  "repository": {
+    "url": "https://github.com/conventional-changelog/get-pkg-repo"
+  }
+}
