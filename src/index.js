@@ -1,4 +1,4 @@
-import path from "path";
+import { resolve } from "path";
 import { readFile } from "fs/promises";
 import { promisify } from "util";
 import { exec as originalExec } from "child_process";
@@ -28,7 +28,7 @@ const getCurrentBranch = async () => {
 
 const cwd = process.cwd();
 
-module.exports = function (metaPath = path.resolve(cwd, "meta.json")) {
+module.exports = function (metaPath = resolve(cwd, "meta.json")) {
   const headerMap = new Map();
   return {
     name: "tampermonkey-header",
@@ -72,7 +72,7 @@ module.exports = function (metaPath = path.resolve(cwd, "meta.json")) {
     },
     async banner() {
       try {
-        const pkgPath = path.resolve(cwd, "package.json");
+        const pkgPath = resolve(cwd, "package.json");
         const pkg = JSON.parse(await readFile(pkgPath));
         const pkgRepo = pkg.repository && getPkgRepo(pkg);
         const repoUrl = pkgRepo?.browse();

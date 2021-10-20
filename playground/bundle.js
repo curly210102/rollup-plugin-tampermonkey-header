@@ -5,11 +5,11 @@
 // @version        0.0.1
 // @author         Nickname
 // @description    A Test
+// @include        *
 // @homepage       https://github.com/conventional-changelog/get-pkg-repo#readme
 // @supportURL     https://github.com/conventional-changelog/get-pkg-repo/issue
 // @updateURL      https://raw.githubusercontent.com/conventional-changelog/get-pkg-repo/main/user.js
 // @downloadURL    https://raw.githubusercontent.com/conventional-changelog/get-pkg-repo/main/user.js
-// @include        *
 // @grant          GM_getValue
 // @connect        api.juejin.com
 // ==/UserScript==

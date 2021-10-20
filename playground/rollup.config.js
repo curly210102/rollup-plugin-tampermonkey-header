@@ -1,7 +1,7 @@
 // rollup.config.js
 import { defineConfig } from 'rollup'
 
-import tmHeader from "../plugin"
+import tmHeader from "../plugin.esm"
 
 export default defineConfig({
   input: 'src/main.js',
