@@ -43,6 +43,8 @@ const output = [
     build({
       ...common,
       ...(specifyOutput ?? output[0] ?? {}),
+      watch: true,
+      sourcemap: true
     });
   } else {
     await Promise.all(

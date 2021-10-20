@@ -1,4 +1,4 @@
-import { resolve } from "path";
+import { resolve, join } from "path";
 import { readFile } from "fs/promises";
 import { promisify } from "util";
 import { exec as originalExec } from "child_process";
@@ -26,12 +26,31 @@ const getCurrentBranch = async () => {
   return stdout?.trim();
 };
 
+const generateUserScriptHeader = (headerContent) => {
+  const maxLength = Math.max(...headerContent.map(([name]) => name.length));
+  return [
+    "// ==UserScript==",
+    ...headerContent.map(
+      ([name, value]) => `// ${name.padEnd(maxLength + 4)}${value}`
+    ),
+    "// ==/UserScript==",
+  ].join("\n");
+};
+
 const cwd = process.cwd();
 
-module.exports = function (metaPath = resolve(cwd, "meta.json")) {
+module.exports = function (
+  { metaPath, transformHeaderContent } = {
+    metaPath: resolve(cwd, "meta.json"),
+    transformHeaderContent: void 0,
+  }
+) {
   const headerMap = new Map();
   return {
     name: "tampermonkey-header",
+    buildStart() {
+      this.addWatchFile(metaPath);
+    },
     transform(code, id) {
       const ast = this.parse(code);
       let scope = attachScopes(ast, "scope");
@@ -70,6 +89,9 @@ module.exports = function (metaPath = resolve(cwd, "meta.json")) {
         connectSet,
       });
     },
+    renderStart ({file}) {
+      userScriptFile = file ?? "user.js";
+    },
     async banner() {
       try {
         const pkgPath = resolve(cwd, "package.json");
@@ -82,7 +104,7 @@ module.exports = function (metaPath = resolve(cwd, "meta.json")) {
           const rawURL =
             pkgRepo.type === "github"
               ? repoUrl.replace(pkgRepo.domain, "raw.githubusercontent.com") +
-                `/${branch}/user.js`
+                `/${branch}/${userScriptFile}`
               : "";
           Object.assign(repoRelatedMeta, {
             "@homepage": `${repoUrl}#readme`,
@@ -111,7 +133,6 @@ module.exports = function (metaPath = resolve(cwd, "meta.json")) {
         const itemEntries = Object.entries(metaData).filter(
           ([_name, value]) => !!value
         );
-        const maxLength = Math.max(...itemEntries.map(([name]) => name.length));
         const grants = new Set();
         const connects = new Set();
 
@@ -132,19 +153,16 @@ module.exports = function (metaPath = resolve(cwd, "meta.json")) {
         for (const v of connects) {
           itemEntries.push(["@connect", v]);
         }
-        const headerContent = itemEntries.map(
-          ([name, value]) => `// ${name.padEnd(maxLength + 4)}${value}`
-        );
-        const userScriptHeader = [
-          "// ==UserScript==",
-          ...headerContent,
-          "// ==/UserScript==",
-        ].join("\n");
+        const headerContent =
+          transformHeaderContent?.([...itemEntries]) ?? itemEntries;
 
-        return userScriptHeader;
+        return generateUserScriptHeader(headerContent);
       } catch (error) {
         console.log(error);
       }
+    },
+    api: {
+      generateUserScriptHeader,
     },
   };
 };
