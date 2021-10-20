@@ -46,6 +46,7 @@ module.exports = function (
   }
 ) {
   const headerMap = new Map();
+  let userScriptFile;
   return {
     name: "tampermonkey-header",
     buildStart() {
