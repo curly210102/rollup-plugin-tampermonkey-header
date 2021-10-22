@@ -178,7 +178,7 @@ dist
 
 plugin.*.js
 plugin.*.js.*
-plugin.*.cjs
-plugin.*.cjs.*
+plugin.cjs
+plugin.cjs.*
 
 yarn.lock
