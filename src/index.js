@@ -40,13 +40,13 @@ const generateUserScriptHeader = (headerContent) => {
 const cwd = process.cwd();
 
 module.exports = function (
-  { metaPath, transformHeaderContent } = {
+  { metaPath, transformHeaderContent, outputFile } = {
     metaPath: resolve(cwd, "meta.json"),
     transformHeaderContent: void 0,
+    outputFile: "main.user.js"
   }
 ) {
   const headerMap = new Map();
-  let userScriptFile;
   return {
     name: "tampermonkey-header",
     buildStart() {
@@ -90,9 +90,6 @@ module.exports = function (
         connectSet,
       });
     },
-    renderStart ({file}) {
-      userScriptFile = file ?? "user.js";
-    },
     async banner() {
       try {
         const pkgPath = resolve(cwd, "package.json");
@@ -105,7 +102,7 @@ module.exports = function (
           const rawURL =
             pkgRepo.type === "github"
               ? repoUrl.replace(pkgRepo.domain, "raw.githubusercontent.com") +
-                `/${branch}/${userScriptFile}`
+                `/${branch}/${outputFile}`
               : "";
           Object.assign(repoRelatedMeta, {
             "@homepage": `${repoUrl}#readme`,
