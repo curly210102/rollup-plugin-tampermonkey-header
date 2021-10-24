@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-tampermonkey-header",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A rollup plugin which can auto-generate UserScript Header, by extract information from package.json and code",
   "main": "plugin.cjs",
   "module": "plugin.esm.js",
@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build": "node ./esbuild.js",
-    "dev": "node ./esbuild.js --development --format=cjs"
+    "dev": "node ./esbuild.js --development --format=esm"
   },
   "engines": {
     "node": ">=14.0.0"

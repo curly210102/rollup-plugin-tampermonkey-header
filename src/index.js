@@ -43,7 +43,7 @@ module.exports = function (
   { metaPath, transformHeaderContent, outputFile } = {
     metaPath: resolve(cwd, "meta.json"),
     transformHeaderContent: void 0,
-    outputFile: "main.user.js"
+    outputFile: "main.user.js",
   }
 ) {
   const headerMap = new Map();
@@ -135,13 +135,16 @@ module.exports = function (
         const connects = new Set();
 
         const moduleIds = this.getModuleIds();
-
         for (const id of moduleIds) {
           const moduleHeader = headerMap.get(id);
           if (moduleHeader) {
             const { grantSet, connectSet } = moduleHeader;
-            grantSet.size && grants.add(...grantSet);
-            connectSet.size && connects.add(...connectSet);
+            for (const v of grantSet) {
+              grants.add(v);
+            }
+            for (const v of connectSet) {
+              connects.add(v);
+            }
           }
         }
 
