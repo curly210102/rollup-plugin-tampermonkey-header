@@ -128,8 +128,30 @@ module.exports = function (
           Object.assign(metaData, userMetaData);
         } catch (err) {}
 
-        const itemEntries = Object.entries(metaData).filter(
-          ([_name, value]) => !!value
+        const itemEntries = Object.entries(metaData).reduce(
+          (entries, [name, value]) => {
+            if (!value) {
+              return entries;
+            }
+            if (
+              [
+                "@grant",
+                "@connect",
+                "@require",
+                "@resource",
+                "@include",
+                "@match",
+                "@exclude",
+              ].includes(name) &&
+              Array.isArray(value)
+            ) {
+              value.forEach((v) => entries.push([name, v]));
+            } else {
+              entries.push([name, value]);
+            }
+            return entries;
+          },
+          []
         );
         const grants = new Set();
         const connects = new Set();
@@ -154,8 +176,13 @@ module.exports = function (
         for (const v of connects) {
           itemEntries.push(["@connect", v]);
         }
+
+        const headerItemEntries = [
+          ...new Set(itemEntries.map(JSON.stringify)),
+        ].map(JSON.parse);
+
         const headerContent =
-          transformHeaderContent?.([...itemEntries]) ?? itemEntries;
+          transformHeaderContent?.(headerItemEntries) ?? headerItemEntries;
 
         return generateUserScriptHeader(headerContent);
       } catch (error) {
